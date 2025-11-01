@@ -1,0 +1,49 @@
+.tabla-container {
+  padding: 20px;
+  background: #1b2a41;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.tabla-container h2 {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.tabla-notas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-notas th,
+.tabla-notas td {
+  border: 1px solid #334;
+  padding: 10px;
+  text-align: center;
+}
+
+.tabla-notas th {
+  background: #112240;
+}
+
+.tabla-notas input {
+  width: 80px;
+  padding: 5px;
+  text-align: center;
+}
+
+.guardar-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #00aaff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.guardar-btn:hover {
+  background: #0088cc;
+}

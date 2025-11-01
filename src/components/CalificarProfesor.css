@@ -1,0 +1,64 @@
+.formulario-calificacion {
+  max-width: 500px;
+  margin: 80px auto;
+  background-color: #f9fbff;
+  border-left: 5px solid #007bff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  font-family: Arial, sans-serif;
+}
+
+.formulario-calificacion h2 {
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 22px;
+  text-align: center;
+}
+
+.formulario-calificacion label {
+  display: block;
+  margin-top: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.formulario-calificacion select,
+.formulario-calificacion textarea,
+.formulario-calificacion input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: none;
+}
+
+.formulario-calificacion textarea {
+  height: 100px;
+}
+
+.formulario-calificacion button {
+  margin-top: 24px;
+  width: 100%;
+  background-color: #0D1E5A;
+  color: white;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.formulario-calificacion button:hover {
+  background-color: #0056b3;
+}
+
+.mensaje {
+  margin-top: 20px;
+  font-size: 15px;
+  color: green;
+  text-align: center;
+}

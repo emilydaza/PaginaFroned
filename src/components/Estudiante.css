@@ -5,9 +5,6 @@
     max-width: 1000px;
     margin: 60px auto;
     padding: 40px;
-    background-color: #112240;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     color: #ffffff;
     font-family: "Source Sans Pro", Arial, sans-serif;
   }
@@ -37,7 +34,7 @@
   }
   
   .boton-materia {
-    background-color: #2563eb;
+    background-color: #0D1E5A;
     border: none;
     padding: 14px 25px;
     color: white;
@@ -61,8 +58,174 @@
   .imagen-estudiante {
     max-width: 45%;
     border-radius: 15px;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 8px 24px #2563eb(37, 99, 235, 0.4);
     object-fit: cover;
     height: 300px;
   }
   
+  .calificar-profesor-panel {
+  position: absolute;
+  top: 100px;
+  right: 40px;
+  width: 300px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.boton-calificar {
+  background-color: #a5a9ad;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+ 
+.boton-calificar:hover {
+  background-color: #0056b3;
+}
+
+.texto-explicativo {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.contenedor-estudiante-flex {
+  display: flex;
+  justify-content: center; /* ⬅️ Alinea todo a la izquierda */
+  align-items: flex-start;
+  padding: 40px;
+  gap: 60px; /* ⬅️ Espacio entre columnas */
+}
+
+
+.contenido-texto-estudiante {
+  flex: 0 0 600px; /* ⬅️ Fijo, más estrecho para dejar espacio al panel */
+}
+
+.panel-calificacion {
+  flex-shrink: 0;
+  width: 400px;
+  background-color: #f5f8ff;
+  border-left: 4px solid #0D1E5A;
+  padding: 30px 24px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 650px; /* ⬅️ bajado para alinearse con el texto principal */
+  margin-left: 20px; /* ⬅️ más cerca del contenido */
+}
+
+
+
+.panel-calificacion h3 {
+  font-size: 20px;
+  color: #007bff;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.boton-calificar {
+  background-color: #0D1E5A;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.boton-calificar:hover {
+  background-color: #0056b3;
+}
+
+.texto-explicativo {
+  margin-top: 16px;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.tabla-notas {
+  margin-top: 60px;
+  background-color: #0D1E5A;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: white;
+  font-family: "Source Sans Pro", Arial, sans-serif;
+}
+
+.tabla-notas h2 {
+  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.tabla-notas table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #f9fbff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabla-notas th,
+.tabla-notas td {
+  border: 1px solid #ccc;
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.tabla-notas th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.tabla-notas td {
+  background-color: #fff;
+  color: #333;
+}
+
+.tabla-notas p {
+  font-size: 16px;
+  color: #ccc;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.contenido-estudiante-flex {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.columna-izquierda {
+  flex: 2;
+}
+
+.columna-derecha {
+  flex: 1;
+}
+
+

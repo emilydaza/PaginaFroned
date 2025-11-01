@@ -1,0 +1,31 @@
+.contenedor-profesor {
+  padding: 2rem;
+  text-align: center;
+}
+
+.contenido-texto-profesor h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.botones-materias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.boton-materia {
+  padding: 1rem;
+  background-color: #0D1E5A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.boton-materia:hover {
+  background-color: #0056b3;
+}

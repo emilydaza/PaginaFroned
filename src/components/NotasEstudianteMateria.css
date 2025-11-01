@@ -1,0 +1,74 @@
+.notas-estudiante-materia {
+  max-width: 1000px;
+  margin: 60px auto;
+  background-color: #4f65c7;
+  padding: 40px;
+  border-radius: 12px;
+
+  color: white;
+  font-family: "Source Sans Pro", Arial, sans-serif;
+}
+
+.notas-estudiante-materia h2 {
+  font-size: 2.2rem;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 10px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.notas-estudiante-materia p {
+  font-size: 1.1rem;
+  color: #a0aec0;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.notas-estudiante-materia table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+  background-color: #f9fbff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.notas-estudiante-materia th,
+.notas-estudiante-materia td {
+  border: 1px solid #ccc;
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.notas-estudiante-materia th {
+  background-color: #0D1E5A;
+  color: white;
+  font-weight: 600;
+}
+
+.notas-estudiante-materia td {
+  background-color: #fff;
+  color: #333;
+}
+
+.notas-estudiante-materia button {
+  margin-top: 40px;
+  background-color: #0D1E5A;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.notas-estudiante-materia button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}

@@ -1,92 +1,313 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const AdminPanel = () => {
-  const [usuarios, setUsuarios] = useState([]); 
+function AdminPanel({ usuarioActivo }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rol, setRol] = useState("estudiante");
+  const [usuarios, setUsuarios] = useState([]);
+  const [opiniones, setOpiniones] = useState([]);
 
-  const obtenerUsuarios = async () => {
-    try {
-      const res = await fetch("http://localhost:3003/api/usuarios");
-      const data = await res.json();
-      console.log("GET /api/usuarios response:", data);
-      setUsuarios(data);
-    } catch (error) {
-      console.error("Error al obtener usuarios", error);
-    }
-  };
-  
-  
-
-  const agregarUsuario = async () => {
-    const username = prompt("Nombre del usuario:");
-    const password = prompt("Contraseña del usuario:");
-  
-    if (!username || !password) return alert("Campos requeridos");
-  
-    try {
-      const res = await fetch("http://localhost:3003/api/usuarios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-  
-      const data = await res.json();
-      console.log("POST /api/usuarios response status:", res.status);
-      console.log("POST /api/usuarios response body:", data);
-  
-      if (res.ok) {
-        alert("Usuario agregado");
-        await obtenerUsuarios();
-      } else {
-        alert("Error al agregar usuario: " + (data.error || "Error desconocido"));
-      }
-    } catch (error) {
-      console.error("Error al agregar usuario", error);
-    }
-  };
-  
-  const eliminarUsuario = async () => {
-    const id = prompt("ID del usuario a eliminar:");
-
-    if (!id) return;
-
-    try {
-      const res = await fetch(`http://localhost:3003/api/usuarios/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        alert("Usuario eliminado");
-        obtenerUsuarios();
-      }
-    } catch (error) {
-      console.error("Error al eliminar usuario", error);
-    }
+  const cargarUsuarios = () => {
+    fetch("http://localhost:5000/api/usuarios")
+      .then(res => res.json())
+      .then(data => setUsuarios(data))
+      .catch(err => console.error("❌ Error al cargar usuarios:", err));
   };
 
-
+  const cargarOpiniones = () => {
+    fetch("http://localhost:5000/api/opiniones")
+      .then(res => res.json())
+      .then(data => setOpiniones(data))
+      .catch(err => console.error("❌ Error al cargar opiniones:", err));
+  };
 
   useEffect(() => {
-    obtenerUsuarios(); 
+    cargarUsuarios();
+    cargarOpiniones();
   }, []);
+
+  const crearUsuario = () => {
+    if (!username || !password) {
+      alert("⚠️ Debes llenar todos los campos");
+      return;
+    }
+
+    fetch("http://localhost:5000/api/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, rol })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Error al crear usuario");
+        return res.text();
+      })
+      .then(msg => {
+        alert(msg);
+        setUsername("");
+        setPassword("");
+        setRol("estudiante");
+        cargarUsuarios();
+      })
+      .catch(err => alert("❌ No se pudo crear el usuario"));
+  };
+
+  const eliminarUsuario = (nombre) => {
+    if (!window.confirm(`¿Eliminar a ${nombre}?`)) return;
+
+    fetch(`http://localhost:5000/api/usuarios/${nombre}`, {
+      method: "DELETE"
+    })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        cargarUsuarios();
+      })
+      .catch(err => alert("❌ No se pudo eliminar el usuario"));
+  };
+  
+  const vaciarOpiniones = () => {
+    if (!window.confirm("¿Estás seguro de que quieres borrar TODAS las opiniones?")) return;
+
+    fetch("http://localhost:5000/api/opiniones", {
+      method: "DELETE"
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Error al borrar opiniones");
+        return res.text();
+      })
+      .then(msg => {
+        alert(msg);
+        cargarOpiniones(); // recarga la lista
+      })
+      .catch(err => alert("❌ No se pudieron borrar las opiniones"));
+  };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Gestión de Usuarios</h2>
-      <button onClick={agregarUsuario}>Añadir Usuario</button>
-      <button onClick={eliminarUsuario}>Eliminar Usuario</button>
-      <button onClick={obtenerUsuarios}>Actualizar Lista</button>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            backgroundColor: "#FF3333",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          Cerrar sesión
+        </button>
+      </div>
+      
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>Gestión de Usuarios</h1>
+      </div>
 
-      <ul>
-  {usuarios.map((u) => (
-    <li key={u.id}>
-      Nombre: {u.username} | Contraseña: {u.password}
-    </li>
-  ))}
-</ul>
+      <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+        {/* 🔵 Columna izquierda: solo se muestra en /admin */}
+        {location.pathname === "/admin" && (
+          <div style={{ flex: "1" }}>
+            <div style={{
+              maxWidth: "450px",
+              margin: "20px 0 30px 0",
+              padding: "25px",
+              backgroundColor: "#4f65c7",
+              borderRadius: "10px",
+              boxShadow: "0 0 15px rgba(0,0,0,0.1)",
+              fontFamily: "Arial, sans-serif"
+            }}>
+              <h3 style={{ marginBottom: "20px", color: "#10164d", fontSize: "22px" }}>Añadir Usuario</h3>
 
+              <input
+                type="text"
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "15px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                  fontSize: "16px"
+                }}
+              />
 
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "15px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                  fontSize: "15px"
+                }}
+              />
+
+              <select
+                value={rol}
+                onChange={e => setRol(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "20px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                  fontSize: "15px",
+                  backgroundColor: "#f0f0f0"
+                }}
+              >
+                <option value="estudiante">Estudiante</option>
+                <option value="profesor">Profesor</option>
+                <option value="admin">Administrador</option>
+              </select>
+
+              <button
+                onClick={crearUsuario}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  backgroundColor: "#10164d",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#0c1240"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#10164d"}
+              >
+                Crear usuario
+              </button>
+            </div>
+
+            <button
+              onClick={() => navigate("/admin/seguimiento-docentes")}
+              style={{
+                padding: "14px 28px",
+                backgroundColor: "#10164d",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginTop: "20px"
+              }}
+            >
+              📊 Seguimiento de docentes
+            </button>
+          </div>
+        )}
+
+        {/* ⚪ Columna derecha: tabla dinámica */}
+        <div style={{ flex: "2" }}>
+          {location.pathname === "/admin" && (
+            <>
+              <h3>Lista de Usuarios</h3>
+              <table border="1" cellPadding="10" style={{ backgroundColor: "#10164dff", color: "white", width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.map(u => (
+                    <tr key={u.username}>
+                      <td>{u.username}</td>
+                      <td>{u.rol}</td>
+                      <td>
+                        <button onClick={() => eliminarUsuario(u.username)}>Eliminar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {location.pathname === "/admin/seguimiento-docentes" && (
+            <>
+              <h3>Opiniones de estudiantes</h3>
+              {opiniones.length === 0 ? (
+                <p style={{ color: "#ccc" }}>No hay opiniones registradas aún.</p>
+              ) : (
+                <table border="1" cellPadding="10" style={{ backgroundColor: "#f0f0f0", width: "100%", borderCollapse: "collapse", color: "#10164d" }}>
+                  <thead>
+                    <tr>
+                      <th>Materia</th>
+                      <th>Profesor</th>
+                      <th>Comentario</th>
+                      <th>Calificación</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {opiniones.map((op, i) => (
+                      <tr key={i}>
+                        <td>{op.materia}</td>
+                        <td>{op.profesor}</td>
+                        <td>{op.comentario}</td>
+                        <td>{op.calificacion}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
+              <button
+                onClick={() => navigate("/admin")}
+                style={{
+                  marginTop: "30px",
+                  padding: "12px 24px",
+                  backgroundColor: "#10164d",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                🔙 Volver al panel principal
+              </button>
+              <button
+                onClick={vaciarOpiniones}
+                style={{
+                  marginTop: "15px",
+                  padding: "12px 24px",
+                  backgroundColor: "#c70000",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                 Vaciar opiniones
+              </button>
+
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default AdminPanel;
+
+

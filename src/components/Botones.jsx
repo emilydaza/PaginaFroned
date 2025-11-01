@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./Botones.css";
-import { usuarios } from "../users"; 
 
-function Botones() {
+function Botones({ setUsuarioActivo }) {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [username, setUsername] = useState("");
@@ -22,35 +21,46 @@ function Botones() {
   };
 
   const manejarLogin = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const usuarioValido = usuarios.find(
-      (u) =>
-        u.username === username &&
-        u.password === password
-    );
+  fetch("http://localhost:5000/api/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ username, password })
+})
+  .then(res => {
+    if (!res.ok) throw new Error("Usuario o contraseña incorrectos");
+    return res.json();
+  })
+  .then(data => {
+    setUsuarioActivo(data);
+    localStorage.setItem("grado", data.grado);
+    localStorage.setItem("username", data.username);
+    cerrarModal(); // ✅ ahora está dentro del .then
 
-    if (usuarioValido) {
-      const rol = usuarioValido.rol.toLowerCase();
-      if (rol === "estudiante") {
-        navigate("/estudiante");
-      } else if (rol === "profesor") {
-        navigate("/profesor");
-      } else if (rol === "administrador") {
-        navigate("/admin");
-      } else {
-        alert(`Bienvenido ${usuarioValido.username} (${usuarioValido.rol})`);
-      }
-      cerrarModal();
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("rol", data.rol);
+    localStorage.setItem("grado", data.grado);
+
+    const rol = data.rol.toLowerCase();
+    if (rol === "estudiante") {
+      navigate("/estudiante");
+    } else if (rol === "profesor") {
+      navigate("/profesor");
+    } else if (rol === "admin" || rol === "administrador") {
+      navigate("/admin");
     } else {
-      setError("Usuario o contraseña incorrectos.");
+      alert(`Bienvenido ${data.username} (${data.rol})`);
     }
-  };
-
+  })
+  .catch(err => setError("Usuario o contraseña incorrectos."));
+};
+      
   return (
     <div className="contenedor-principal">
       <div className="contenido-texto">
-        <h1>Bienvenido a SRS</h1>
+        <img src="/image.png" alt="Logo" className="logo" />
+        <h1>Bienvenido a SIREST</h1>
         <p>Por favor, inicia sesión para continuar</p>
         <button className="boton" onClick={abrirModal}>
           Inicio de Sesión
@@ -58,7 +68,7 @@ function Botones() {
       </div>
 
       <img
-        src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80"
+        src="/bienvenido.png"
         alt="Bienvenida"
         className="imagen-bienvenida"
       />
