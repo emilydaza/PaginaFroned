@@ -14,12 +14,12 @@ body {
 .header {
   display: flex;
   align-items: center;
-  gap: 10px; /* espacio entre logo y texto */
+  gap: 10px; 
   padding: 10px;
 }
 
 .logo {
-  width: 50px;   /* ajusta el tamaño */
+  width: 50px; 
   height: auto;
 }
 

@@ -22,10 +22,9 @@ function MateriaDetalle({ usuarioActivo }) {
             const datosFormateados = data.map(est => ({
               estudiante: est.nombre,
               notas: [
-                est.examen1, est.examen2, est.examen_final,
-                est.n1, est.n2, est.n3, est.n4,
-                est.autoevaluacion, est.heteroevaluacion,
-                ""
+                est.examen1 ?? "", est.examen2 ?? "", est.examen_final ?? "",
+                est.n1 ?? "", est.n2 ?? "", est.n3 ?? "", est.n4 ?? "",
+                est.autoevaluacion ?? "", est.heteroevaluacion ?? ""
               ]
             }));
             setNotas(datosFormateados);
@@ -46,63 +45,75 @@ function MateriaDetalle({ usuarioActivo }) {
     }
 
     if (esEstudiante && usuarioActivo?.username) {
+      console.log("🎯 Entrando al bloque de estudiante");
       fetch(`http://localhost:5000/api/grado/${usuarioActivo.username}`)
         .then(res => res.json())
         .then(({ grado }) => {
           setGradoEstudiante(grado);
-          return fetch(`http://localhost:5000/api/notas/${grado}/${usuarioActivo.username}`);
+          return fetch(`http://localhost:5000/api/asignaciones-estudiantes?grado=${grado}&materia=${nombre}`);
         })
         .then(res => res.json())
         .then(data => {
-          const datosFormateados = data.map(est => ({
-            estudiante: est.nombre,
-            notas: [
-              est.examen1, est.examen2, est.examen_final,
-              est.n1, est.n2, est.n3, est.n4,
-              est.autoevaluacion, est.heteroevaluacion,
-              ""
-            ]
-          }));
-          setNotas(datosFormateados);
+          console.log("📦 Datos recibidos del backend:", data);
+          const est = data.find(e => e.nombre?.toLowerCase() === usuarioActivo.username?.toLowerCase());
+          if (est) {
+            const datosFormateados = [{
+              estudiante: est.nombre,
+              notas: [
+                est.examen1 ?? "", est.examen2 ?? "", est.examen_final ?? "",
+                est.n1 ?? "", est.n2 ?? "", est.n3 ?? "", est.n4 ?? "",
+                est.autoevaluacion ?? "", est.heteroevaluacion ?? ""
+              ]
+            }];
+            console.log("📦 Datos recibidos:", data);
+            setNotas(datosFormateados);
+          } else {
+            console.warn("⚠️ No se encontraron notas para el estudiante en esta materia");
+          }
         })
         .catch(err => console.error("❌ Error al traer notas del estudiante:", err));
     }
   }, [nombre, usuarioActivo, esProfesor, esEstudiante, grado]);
 
   const guardarNota = async (estudiante, materia, profesor, valores) => {
-    try {
-      const payload = {
-        nombre: estudiante,
-        materia,
-        grado: esProfesor ? grado : gradoEstudiante,
-        examen1: valores[0],
-        examen2: valores[1],
-        examen_final: valores[2],
-        n1: valores[3],
-        n2: valores[4],
-        n3: valores[5],
-        n4: valores[6],
-        autoevaluacion: valores[7],
-        heteroevaluacion: valores[8]
-      };
+    const campos = [
+      "examen1", "examen2", "examen_final",
+      "n1", "n2", "n3", "n4",
+      "autoevaluacion", "heteroevaluacion"
+    ];
 
-      const res = await fetch("http://localhost:5000/api/notas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+    const gradoFinal = esProfesor ? grado : gradoEstudiante;
 
-      const resultado = await res.json();
-      if (!res.ok) throw new Error(resultado.mensaje || "No se pudo guardar la nota");
-      console.log("✅ Nota registrada para", estudiante);
-    } catch (err) {
-      console.error("❌ Error al guardar nota:", err.message);
+    for (let i = 0; i < campos.length; i++) {
+      const campo = campos[i];
+      const valor = valores[i] === "" || valores[i] === null ? null : Number(valores[i]);
+
+      if (valor !== undefined && valor !== null && valor !== "") {
+        try {
+          const res = await fetch("http://localhost:5000/api/guardar-nota", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nombre: estudiante,
+              grado: gradoFinal,
+              materia,
+              campo,
+              valor
+            })
+          });
+
+          const resultado = await res.json();
+          if (!res.ok) throw new Error(resultado.error || "No se pudo guardar la nota");
+          console.log(`✅ ${campo} guardado para ${estudiante}`);
+        } catch (err) {
+          console.error(`❌ Error al guardar ${campo} para ${estudiante}:`, err.message);
+        }
+      }
     }
   };
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial, sans-serif", position: "relative" }}>
-      {/* 🔴 Botón de cerrar sesión */}
       <button
         onClick={() => {
           localStorage.clear();
@@ -136,14 +147,21 @@ function MateriaDetalle({ usuarioActivo }) {
         grado={esProfesor ? grado : gradoEstudiante}
         editable={esProfesor}
         notas={notas}
-        onGuardarNota={(estudiante, valores) =>
-          guardarNota(estudiante, nombre, localStorage.getItem("username"), valores)
-        }
+        onGuardarNota={(estudiante, nuevasNotas) => {
+          setNotas(prev =>
+            prev.map(fila =>
+              fila.estudiante === estudiante
+                ? { ...fila, notas: nuevasNotas }
+                : fila
+            )
+          );
+        }}
       />
     </div>
   );
 }
 
 export default MateriaDetalle;
+
 
 

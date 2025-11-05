@@ -4,11 +4,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 function AdminPanel({ usuarioActivo }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [filtro, setFiltro] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("estudiante");
   const [usuarios, setUsuarios] = useState([]);
   const [opiniones, setOpiniones] = useState([]);
+  const [usuarioEditando, setUsuarioEditando] = useState(null);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const cargarUsuarios = () => {
     fetch("http://localhost:5000/api/usuarios")
@@ -67,7 +70,7 @@ function AdminPanel({ usuarioActivo }) {
       })
       .catch(err => alert("❌ No se pudo eliminar el usuario"));
   };
-  
+
   const vaciarOpiniones = () => {
     if (!window.confirm("¿Estás seguro de que quieres borrar TODAS las opiniones?")) return;
 
@@ -80,10 +83,59 @@ function AdminPanel({ usuarioActivo }) {
       })
       .then(msg => {
         alert(msg);
-        cargarOpiniones(); // recarga la lista
+        cargarOpiniones();
       })
       .catch(err => alert("❌ No se pudieron borrar las opiniones"));
   };
+
+  const handleArchivoExcel = async (e) => {
+    const archivo = e.target.files[0];
+    const formData = new FormData();
+    formData.append("archivo", archivo);
+
+    const res = await fetch("http://localhost:5000/api/usuarios/carga-masiva", {
+      method: "POST",
+      body: formData
+    });
+
+    const resultado = await res.text();
+    alert(resultado);
+    cargarUsuarios();
+  };
+
+  const abrirModal = (usuario) => {
+    setUsuarioEditando(usuario);
+    setMostrarModal(true);
+  };
+
+  const cerrarModal = () => {
+    setUsuarioEditando(null);
+    setMostrarModal(false);
+  };
+
+  const handleGuardarEdicion = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`http://localhost:5000/api/usuarios/${usuarioEditando.username}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(usuarioEditando),
+      });
+
+      if (res.ok) {
+        alert("✅ Usuario actualizado");
+        cerrarModal();
+      // Recargar usuarios si quieres
+      } else {
+       alert("❌ Error al actualizar usuario");
+     }
+   } catch (err) {
+     console.error("❌ Error al guardar edición:", err);
+   }
+ };
+
+  
+
 
   return (
     <div style={{ padding: "20px" }}>
@@ -103,13 +155,25 @@ function AdminPanel({ usuarioActivo }) {
           Cerrar sesión
         </button>
       </div>
-      
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>Gestión de Usuarios</h1>
+        <input
+          type="file"
+          name="archivo"
+          accept=".xlsx, .xls"
+          onChange={handleArchivoExcel}
+          style={{
+            marginBottom: "20px",
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "16px"
+          }}
+        />
       </div>
 
       <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
-        {/* 🔵 Columna izquierda: solo se muestra en /admin */}
         {location.pathname === "/admin" && (
           <div style={{ flex: "1" }}>
             <div style={{
@@ -211,31 +275,97 @@ function AdminPanel({ usuarioActivo }) {
           </div>
         )}
 
-        {/* ⚪ Columna derecha: tabla dinámica */}
         <div style={{ flex: "2" }}>
           {location.pathname === "/admin" && (
             <>
               <h3>Lista de Usuarios</h3>
+              <input
+                type="text"
+                placeholder="Buscar estudiante..."
+                value={filtro}
+                onChange={(e) => setFiltro(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "20px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                  fontSize: "16px"
+                }}
+              />
+
               <table border="1" cellPadding="10" style={{ backgroundColor: "#10164dff", color: "white", width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr>
-                    <th>Usuario</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
+                    <th style={{ border: "1px solid white" }}>Usuario</th>
+                    <th style={{ border: "1px solid white" }}>Rol</th>
+                    <th style={{ border: "1px solid white" }}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {usuarios.map(u => (
-                    <tr key={u.username}>
-                      <td>{u.username}</td>
-                      <td>{u.rol}</td>
-                      <td>
-                        <button onClick={() => eliminarUsuario(u.username)}>Eliminar</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {usuarios
+                    .filter(u => u.username.toLowerCase().includes(filtro.toLowerCase()))
+                    .map(u => (
+                      <tr key={u.username}>
+                        <td style={{ border: "1px solid white" }}>{u.username}</td>
+                        <td style={{ border: "1px solid white" }}>{u.rol}</td>
+                        <td style={{ border: "1px solid white" }}>
+                          <button onClick={() => eliminarUsuario(u.username)}>Eliminar</button>
+                          <button 
+                            onClick={() => abrirModal(u)}
+                            style={{
+                              backgroundColor: "#6c757d", // 💙 Cambia este color al que tú quieras
+                              color: "white",
+                              border: "none",
+                              padding: "8px 12px",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              marginLeft: "10px"
+                              
+                            }}
+                          >
+                            Editar
+                          </button>
+
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
+              {usuarioEditando && (
+                <form onSubmit={handleGuardarEdicion} style={{ marginTop: "20px" }}>
+                  <h3>Editar usuario</h3>
+                  <input
+                    type="text"
+                    value={usuarioEditando.username}
+                    onChange={(e) =>
+                      setUsuarioEditando({ ...usuarioEditando, username: e.target.value })
+                    }
+                    placeholder="Nuevo nombre"
+                  />
+                  <input
+                    type="password"
+                    value={usuarioEditando.password || ""}
+                    onChange={(e) =>
+                      setUsuarioEditando({ ...usuarioEditando, password: e.target.value })
+                    }
+                    placeholder="Nueva contraseña"
+                  />
+                  <select
+                    value={usuarioEditando.rol}
+                    onChange={(e) =>
+                      setUsuarioEditando({ ...usuarioEditando, rol: e.target.value })
+                    }
+                  >
+                    <option value="estudiante">Estudiante</option>
+                    <option value="profesor">Profesor</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                  <button type="submit" className="btn btn-success">Guardar</button>
+                  <button type="button" onClick={() => setUsuarioEditando(null)} className="btn btn-secondary">Cancelar</button>
+                </form>
+              )}
             </>
           )}
 
@@ -265,7 +395,8 @@ function AdminPanel({ usuarioActivo }) {
                     ))}
                   </tbody>
                 </table>
-              )}
+              )} {/* ✅ Aquí se cerró correctamente el bloque */}
+
 
               <button
                 onClick={() => navigate("/admin")}
@@ -297,11 +428,72 @@ function AdminPanel({ usuarioActivo }) {
                   cursor: "pointer"
                 }}
               >
-                 Vaciar opiniones
+                Vaciar opiniones
               </button>
-
             </>
           )}
+          {mostrarModal && (
+            <div className="modal show d-block" tabIndex="-1" role="dialog" style={{
+              backgroundColor: "rgba(0,0,0,0.5)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 9999,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <form onSubmit={handleGuardarEdicion}>
+                    <div className="modal-header">
+                      <h5 className="modal-title">Editar usuario</h5>
+                      <button type="button" className="close" onClick={cerrarModal}>
+                        <span>&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      <input
+                        type="text"
+                        value={usuarioEditando.username}
+                        onChange={(e) =>
+                          setUsuarioEditando({ ...usuarioEditando, username: e.target.value })
+                        }
+                        placeholder="Nuevo nombre"
+                        className="form-control mb-2"
+                      />
+                      <input
+                        type="password"
+                        value={usuarioEditando.password || ""}
+                        onChange={(e) =>
+                          setUsuarioEditando({ ...usuarioEditando, password: e.target.value })
+                        }
+                        placeholder="Nueva contraseña"
+                        className="form-control mb-2"
+                      />
+                      <select
+                        value={usuarioEditando.rol}
+                        onChange={(e) =>
+                          setUsuarioEditando({ ...usuarioEditando, rol: e.target.value })
+                        }
+                        className="form-control"
+                      >
+                        <option value="estudiante">Estudiante</option>
+                        <option value="profesor">Profesor</option>
+                        <option value="admin">Administrador</option>
+                      </select>
+                    </div>
+                    <div className="modal-footer">
+                      <button type="submit" className="btn btn-success">Aceptar</button>
+                      <button type="button" className="btn btn-secondary" onClick={cerrarModal}>Cancelar</button>
+                    </div>
+                  </form>
+                 </div>
+               </div>
+             </div>
+           )}
         </div>
       </div>
     </div>
@@ -309,5 +501,3 @@ function AdminPanel({ usuarioActivo }) {
 }
 
 export default AdminPanel;
-
-

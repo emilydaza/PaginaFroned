@@ -52,12 +52,12 @@ function PanelProfesor({ usuarioActivo }) {
   return (
     <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#10164d", color: "white", padding: "40px", position: "relative" }}>
       
-      {/* 🔴 Botón de cerrar sesión */}
+
       <button
         onClick={() => {
           localStorage.clear();
           window.location.href = "/";
- // ajusta si tu login está en otra ruta
+
         }}
         style={{
           position: "absolute",
@@ -76,7 +76,7 @@ function PanelProfesor({ usuarioActivo }) {
         Cerrar sesión
       </button>
 
-      {/* 🔵 Lado izquierdo: materias */}
+
       <div style={{ width: "35%", paddingRight: "30px" }}>
         <h2>📚 Materias de {usuarioActivo?.username}</h2>
         {asignaciones.map((a, i) => (
@@ -103,7 +103,7 @@ function PanelProfesor({ usuarioActivo }) {
         ))}
       </div>
 
-      {/* ⚪ Lado derecho: formulario */}
+
       <div style={{ width: "65%", backgroundColor: "#f9f9f9", color: "#000", padding: "30px", borderRadius: "10px" }}>
         <h2>📤 Crear tarea</h2>
 

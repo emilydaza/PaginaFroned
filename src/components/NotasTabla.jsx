@@ -21,7 +21,7 @@ function NotasTabla({ materia, grado, editable, notas, onGuardarNota }) {
             nombre: fila.estudiante,
             grado,
             materia,
-            profesor: "Freddy Rosero", // 👈 ajusta si lo tienes dinámico
+            profesor: "Freddy Rosero", 
             campo,
             valor
           })
@@ -73,11 +73,14 @@ function NotasTabla({ materia, grado, editable, notas, onGuardarNota }) {
                       value={valor}
                       onChange={(e) => {
                         const nuevasNotas = [...fila.notas];
-                        nuevasNotas[j] = e.target.value;
+                        const entrada = e.target.value;
+
+                        nuevasNotas[j] = entrada === "" ? null : Number(entrada);
                         onGuardarNota(fila.estudiante, nuevasNotas);
                       }}
                       style={inputStyle}
                     />
+
                   ) : (
                     valor
                   )}

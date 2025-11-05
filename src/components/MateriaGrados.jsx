@@ -33,7 +33,7 @@ function MateriaGrados() {
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial, sans-serif", position: "relative" }}>
-      {/* 🔴 Botón de cerrar sesión */}
+
       <button
         onClick={() => {
           localStorage.clear();

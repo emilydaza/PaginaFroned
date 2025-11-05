@@ -7,7 +7,7 @@ function CrearTarea({ usuarioActivo }) {
   const [gradosDisponibles, setGradosDisponibles] = useState([]);
   const [mensaje, setMensaje] = useState("");
 
-  // 🔍 Cargar grados que el profesor tiene asignados
+
   useEffect(() => {
     fetch(`http://localhost:5000/api/grados-profesor?nombre=${usuarioActivo?.username}`)
       .then(res => res.json())

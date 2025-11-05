@@ -60,9 +60,9 @@ function EstudiantePanel() {
     const entrega = new Date(fecha);
     const diff = (entrega - hoy) / (1000 * 60 * 60 * 24);
 
-    if (diff <= 3) return "#ff4d4d";       // rojo
-    if (diff <= 7) return "#ffa94d";       // naranja
-    return "#a0e7a0";                      // verde
+    if (diff <= 3) return "#ff4d4d"; 
+    if (diff <= 7) return "#ffa94d"; 
+    return "#a0e7a0";    
   };
 
   console.log("📦 Tareas recibidas:", tareasGrado);
@@ -75,11 +75,11 @@ function EstudiantePanel() {
         <p>Grado: {grado}</p>
         <p>Aquí puedes ver tus materias, calificaciones y tareas pendientes.</p>
 
-        {/* 🔴 Botón de cerrar sesión */}
+
         <button
           onClick={() => {
             localStorage.clear();
-            navigate("/"); // ajusta si tu login está en otra ruta
+            navigate("/"); 
           }}
           style={{
             marginTop: "20px",
@@ -97,7 +97,7 @@ function EstudiantePanel() {
           Cerrar sesión
         </button>
 
-        {/* 🔔 Tareas del grado */}
+
         {tareasGrado.length > 0 && (
           <div style={{
             position: "absolute",
@@ -130,7 +130,7 @@ function EstudiantePanel() {
           </div>
         )}
 
-        {/* 📚 Botones de materias */}
+
         <div className="botones-materias">
           {materias.map((m, index) => (
             <button
@@ -147,7 +147,7 @@ function EstudiantePanel() {
           ))}
         </div>
 
-        {/* 📊 Notas por materia */}
+
         {materiaSeleccionada && (
           <div className="tabla-notas">
             <h2>Notas de {materiaSeleccionada}</h2>
@@ -191,7 +191,7 @@ function EstudiantePanel() {
         )}
       </div>
 
-      {/* 📝 Panel de calificación */}
+
       <div className="panel-calificacion">
         <h3>Calificar profesor</h3>
         <button

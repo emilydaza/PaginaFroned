@@ -61,7 +61,7 @@ function Profesor() {
   return (
     <div className="contenedor-profesor" style={{ display: "flex", justifyContent: "space-between", minHeight: "100vh", backgroundColor: "#4f65c7", color: "white", padding: "40px", position: "relative" }}>
 
-      {/* 🔵 Lado izquierdo */}
+
       <div style={{ width: "35%", paddingRight: "30px" }}>
         <h2>Bienvenido, Profesor {username}</h2>
         <p>Aquí puedes gestionar clases, notas y tareas.</p>
@@ -99,11 +99,11 @@ function Profesor() {
           </button>
         ))}
 
-        {/* 🔴 Botón de cerrar sesión */}
+
         <button
           onClick={() => {
             localStorage.clear();
-            navigate("/"); // ajusta si tu login está en otra ruta
+            navigate("/"); 
           }}
           style={{
             marginTop: "30px",
@@ -122,7 +122,7 @@ function Profesor() {
         </button>
       </div>
 
-      {/* ⚪ Lado derecho */}
+
       <div style={{ width: "50%", backgroundColor: "#f9f9f9", color: "#000", padding: "30px", borderRadius: "10px" }}>
         <h2>📤 Crear recordatorio</h2>
 

@@ -13,7 +13,7 @@ function CalificarProfesor() {
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
 
-  // Obtener grado del estudiante
+  
   useEffect(() => {
     const obtenerGrado = async () => {
       try {
@@ -30,7 +30,7 @@ function CalificarProfesor() {
     }
   }, [estudiante]);
 
-  // Obtener materias del grado
+
   useEffect(() => {
     const obtenerMaterias = async () => {
       try {
@@ -60,7 +60,7 @@ function CalificarProfesor() {
   }, [materiaSeleccionada, materias]);
   
 
-  // Enviar opinión
+ 
   const enviarOpinion = async (e) => {
     e.preventDefault();
     console.log("📤 Enviando opinión:", {

@@ -100,15 +100,15 @@
 
 .contenedor-estudiante-flex {
   display: flex;
-  justify-content: center; /* ⬅️ Alinea todo a la izquierda */
+  justify-content: center; 
   align-items: flex-start;
   padding: 40px;
-  gap: 60px; /* ⬅️ Espacio entre columnas */
+  gap: 60px;
 }
 
 
 .contenido-texto-estudiante {
-  flex: 0 0 600px; /* ⬅️ Fijo, más estrecho para dejar espacio al panel */
+  flex: 0 0 600px; 
 }
 
 .panel-calificacion {
@@ -124,8 +124,8 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 650px; /* ⬅️ bajado para alinearse con el texto principal */
-  margin-left: 20px; /* ⬅️ más cerca del contenido */
+  margin-top: 650px; 
+  margin-left: 20px; 
 }
 
 
